@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       EC2_USER: ${{ secrets.EC2_USER }}
-      EC2_HOST: ${{ secrets.EC2_HOST }}
+      EC2_HOST: ${{ vars.EC2_HOST }}
       EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
 
     environment:
@@ -38,7 +38,7 @@ jobs:
             sudo apt-get update && sudo apt-get install nginx -y
             sudo systemctl enable --now nginx
             shopt -s dotglob
-            mv html/* /var/www/html/
+            sudo mv html/* /var/www/html/
             shopt -u dotglob
           EOF
         
