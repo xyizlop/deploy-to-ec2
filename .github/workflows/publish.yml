@@ -21,10 +21,10 @@ jobs:
       - name: Copy Files to AWS EC2
         shell: bash
         run: |
-          if [[ -f "$HOME/.ssh/known_hosts" ]]; then
-            ssh-keygen -R $EC2_HOST
-          fi
-          scp -o StrictHostKeyChecking=no -r _site/ "${EC2_USER}@${EC2_HOST}":$HOME/html/
+          cat "$EC2_SSH_KEY" > key.pem && chmod 400 key.pem
+          mkdir -p ~/.ssh/ && touch ~/.ssh/known_hosts
+          ssh-keyscan -H $EC2_HOST >> ~/.ssh/known_hosts
+          scp -i key.pem -r _site/ "${EC2_USER}@${EC2_HOST}":$HOME/html/
 
       - name: Stamp Deployment Target
         run: |
@@ -34,7 +34,6 @@ jobs:
         shell: bash
         run: |
           # EOF is quoted so $HOME is not evaluated on client site
-          cat "$EC2_SSH_KEY" > key.pem && chmod 400 key.pem
           ssh -i key.pem "${EC2_USER}@${EC2_HOST}" << 'EOF'
             sudo apt-get update && sudo apt-get install nginx -y
             sudo systemctl enable --now nginx
