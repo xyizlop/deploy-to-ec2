@@ -35,7 +35,7 @@ jobs:
         shell: bash
         run: |
           # EOF is quoted so $HOME is not evaluated on client site
-          ssh -i key.pem "${EC2_USER}@${EC2_HOST}" << 'EOF'
+          ssh -T -i key.pem "${EC2_USER}@${EC2_HOST}" << 'EOF'
             if ! command -v nginx > /dev/null 2>&1; then
               sudo apt-get update && sudo apt-get install nginx -y
               sudo systemctl enable --now nginx
