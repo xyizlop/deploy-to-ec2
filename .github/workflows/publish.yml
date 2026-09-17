@@ -29,7 +29,7 @@ jobs:
           echo "$EC2_SSH_KEY" > key.pem && chmod 400 key.pem
           mkdir -p ~/.ssh/ && touch ~/.ssh/known_hosts
           echo "$KNOWN_HOSTS" > ~/.ssh/known_hosts
-          rsync -avz -e "ssh -i key.pem" _site/ "${EC2_USER}@${EC2_HOST}":html/
+          rsync -avz -e "ssh -T -i key.pem" _site/ "${EC2_USER}@${EC2_HOST}":html/
 
       - name: Deploy on AWS EC2
         shell: bash
