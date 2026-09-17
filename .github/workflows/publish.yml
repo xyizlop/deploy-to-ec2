@@ -9,6 +9,7 @@ jobs:
       EC2_USER: ${{ secrets.EC2_USER }}
       EC2_HOST: ${{ vars.EC2_HOST }}
       EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
+      KNOWN_HOSTS: ${{ secrets.KNOWN_HOSTS }}
 
     environment:
       name: aws-ec2
@@ -27,8 +28,8 @@ jobs:
         run: |
           echo "$EC2_SSH_KEY" > key.pem && chmod 400 key.pem
           mkdir -p ~/.ssh/ && touch ~/.ssh/known_hosts
-          ssh-keyscan -H $EC2_HOST >> ~/.ssh/known_hosts
-          rsync -avz -e "ssh -T -i key.pem" _site/ "${EC2_USER}@${EC2_HOST}":html/
+          echo "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+          rsync -avz -e "ssh -i key.pem" _site/ "${EC2_USER}@${EC2_HOST}":html/
 
       - name: Deploy on AWS EC2
         shell: bash
@@ -39,9 +40,7 @@ jobs:
               sudo apt-get update && sudo apt-get install nginx -y
               sudo systemctl enable --now nginx
             fi
-            shopt -s dotglob
-            sudo mv html/* /var/www/html/
-            shopt -u dotglob
+          sudo rsync -a --delete html/ /var/www/html/
           EOF
         
       - name: Write Multi-line Summary
