@@ -18,6 +18,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
+      - name: Stamp Deployment Target
+        run: |
+          sed -i 's/deployment target: unknown/deployment target: AWS EC2/' _site/index.html
+
       - name: Copy Files to AWS EC2
         shell: bash
         run: |
@@ -26,17 +30,15 @@ jobs:
           ssh-keyscan -H $EC2_HOST >> ~/.ssh/known_hosts
           rsync -avz -e "ssh -T -i key.pem" _site/ "${EC2_USER}@${EC2_HOST}":html/
 
-      - name: Stamp Deployment Target
-        run: |
-          sed -i 's/deployment target: unknown/deployment target: AWS EC2/' _site/index.html
-
       - name: Deploy on AWS EC2
         shell: bash
         run: |
           # EOF is quoted so $HOME is not evaluated on client site
           ssh -i key.pem "${EC2_USER}@${EC2_HOST}" << 'EOF'
-            sudo apt-get update && sudo apt-get install nginx -y
-            sudo systemctl enable --now nginx
+            if ! command -v nginx > /dev/null 2>&1; then
+              sudo apt-get update && sudo apt-get install nginx -y
+              sudo systemctl enable --now nginx
+            fi
             shopt -s dotglob
             sudo mv html/* /var/www/html/
             shopt -u dotglob
