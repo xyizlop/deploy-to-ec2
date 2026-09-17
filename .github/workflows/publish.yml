@@ -53,7 +53,7 @@ jobs:
 
           | Deployed To | ACCESS AT |
           | ----------  | --------- |
-          | AWS EC2     | "`http://$EC2_HOST`" |
+          | AWS EC2     | [http://$EC2_HOST](http://$EC2_HOST) |
           
           **Click the URL to access application.**
           EOF
