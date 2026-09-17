@@ -24,7 +24,7 @@ jobs:
           echo "$EC2_SSH_KEY" > key.pem && chmod 400 key.pem
           mkdir -p ~/.ssh/ && touch ~/.ssh/known_hosts
           ssh-keyscan -H $EC2_HOST >> ~/.ssh/known_hosts
-          scp -i key.pem -r _site/ "${EC2_USER}@${EC2_HOST}":$HOME/html/
+          scp -i key.pem -r _site/ "${EC2_USER}@${EC2_HOST}":'$HOME/html/'
 
       - name: Stamp Deployment Target
         run: |
