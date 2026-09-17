@@ -21,7 +21,7 @@ jobs:
       - name: Copy Files to AWS EC2
         shell: bash
         run: |
-          cat "$EC2_SSH_KEY" > key.pem && chmod 400 key.pem
+          echo "$EC2_SSH_KEY" > key.pem && chmod 400 key.pem
           mkdir -p ~/.ssh/ && touch ~/.ssh/known_hosts
           ssh-keyscan -H $EC2_HOST >> ~/.ssh/known_hosts
           scp -i key.pem -r _site/ "${EC2_USER}@${EC2_HOST}":$HOME/html/
