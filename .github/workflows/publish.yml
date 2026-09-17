@@ -15,6 +15,9 @@ jobs:
       url: http://${{ env.EC2_HOST }}
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
       - name: Copy Files to AWS EC2
         shell: bash
         run: |
