@@ -21,6 +21,7 @@ jobs:
       - name: Copy Files to AWS EC2
         shell: bash
         run: |
+          ssh-keygen -R $EC2_HOST
           scp -r _site/ "${EC2_USER}@${EC2_HOST}":$HOME/html/
 
       - name: Stamp Deployment Target
