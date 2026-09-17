@@ -24,7 +24,7 @@ jobs:
           echo "$EC2_SSH_KEY" > key.pem && chmod 400 key.pem
           mkdir -p ~/.ssh/ && touch ~/.ssh/known_hosts
           ssh-keyscan -H $EC2_HOST >> ~/.ssh/known_hosts
-          rsync -avz -e "ssh -i key.pem" _site/ "${EC2_USER}@${EC2_HOST}":html/
+          rsync -avz -e "ssh -T -i key.pem" _site/ "${EC2_USER}@${EC2_HOST}":html/
 
       - name: Stamp Deployment Target
         run: |
@@ -38,19 +38,20 @@ jobs:
             sudo apt-get update && sudo apt-get install nginx -y
             sudo systemctl enable --now nginx
             shopt -s dotglob
-            mv $HOME/html/* /var/www/html/
+            mv html/* /var/www/html/
             shopt -u dotglob
           EOF
         
       - name: Write Multi-line Summary
+        shell: bash
         run: |
           # EOF is unqoted to access $EC2_HOST
-          cat << EOF >> $GITHUB_STEP_SUMMARY
+          cat << EOF >> "$GITHUB_STEP_SUMMARY"
           ### 🚀 Deployment Status
 
           | Deployed To | ACCESS AT |
           | ----------  | --------- |
-          | AWS EC2     | "http://$EC2_HOST" |
+          | AWS EC2     | "`http://$EC2_HOST`" |
           
           **Click the URL to access application.**
           EOF
